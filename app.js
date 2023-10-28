@@ -14,7 +14,7 @@ const appRoutes = require('./routes/expenses.js');
 app.use(express.json());
 
 
-app.use('/expenseData', appRoutes);
+app.use('/candyData', appRoutes);
 
 
 app.use(errorController.get404);

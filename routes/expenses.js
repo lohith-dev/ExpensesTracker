@@ -9,13 +9,11 @@ const router = express.Router();
 // /admin/add-product => GET 
 router.get('/', expController.getappntdata);
 
-router.get('/:id', expController.getSingleAppntData);
-
-router.post('/', expController.postAppntdata);
+router.post('/', expController.addNewCandy);
 
 router.put('/',expController.updAppntdata)
 
-router.delete('/:id', expController.deleteAppntdata);
+
 
 
 

@@ -1,16 +1,16 @@
-const expenseModel = require('../model/Expense.js');
+const { request } = require('chai');
+const itemModel = require('../model/item.js');
 const Sequelize = require('../util/database.js')
 
 const getappntdata = async (req,res)=>{
      try{
-            const userData = await expenseModel.findAll();
-            console.log(userData);
-           
-            let noOfRecords = userData.length;
+            const itemData = await itemModel.findAll();
+        
+            let noOfRecords = itemData.length;
             res.status(200).json(
                 {
                     noOfRecords: noOfRecords,
-                    data: userData,
+                    data: itemData,
                 }
             );
             
@@ -38,14 +38,14 @@ const getSingleAppntData = async (req,res)=>{
      }
 }
 
-const postAppntdata = async (req,res)=>{
+const addNewCandy = async (req,res)=>{
     try{
    
-        let {expense,description,category}=req.body;
+        let {candyName,description,price,quantity}=req.body;
       
         console.log("bodyyyyyyyyyyyy",req.body);
-        let appntResponse = await expenseModel.create({
-            expense,description,category,
+        let appntResponse = await itemModel.create({
+            candyName,description,price,quantity
         })
            
            res.status(201).json({
@@ -61,34 +61,23 @@ const postAppntdata = async (req,res)=>{
 }
 
 const updAppntdata = async (req,res)=>{
-    try{
-        let {id,expense,description,category}=req.body;
+    const { id, qty } = req.body;
+    try {
+        const item = await itemModel.findByPk(id);
     
-        let date = new Date();
-
-        console.log(req.body);
-
-        // const number = parseInt(id, 10)
-        // console.log(number,typeof(number));
-        // console.log(Number(id));
-        // console.log(Sequelize.literal('CURRENT_TIMESTAMP'));
-        
-
-        const deviceResponse = await expenseModel.update(
-            {
-                expense: expense,
-                description: description,
-                category: category,
-
-              },
-            {
-                where: { id: id },
-            })
-
-            res.status(200).json(deviceResponse[1])
-    }catch(err){
-        console.log(err);
-    }
+        if (item) {
+          // Update the quantity field of the item
+          item.quantity -= qty;
+          await item.save();
+    
+          res.status(200).json({ message: 'Quantity updated successfully' });
+        } else {
+          res.status(404).json({ error: 'Item not found' });
+        }
+      } catch (error) {
+        console.error('Error updating quantity: ' + error);
+        res.status(500).json({ error: 'Failed to update quantity' });
+      }
 }
 
 const deleteAppntdata = async (req,res)=>{
@@ -114,7 +103,7 @@ const deleteAppntdata = async (req,res)=>{
 
 module.exports={
     getappntdata,
-    postAppntdata,
+    addNewCandy,
     updAppntdata,
     deleteAppntdata,
     getSingleAppntData,
